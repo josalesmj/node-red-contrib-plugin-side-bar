@@ -1,0 +1,89 @@
+<script type="text/javascript">
+    (function () {
+        RED.plugins.registerPlugin("example-sidebar-plugin", {
+            onadd: function () {
+                var content = document.createElement("div");
+                content.style.position = "relative";
+                content.style.height = "100%";
+                content.className = "red-ui-sidebar-example";
+
+                var div = document.createElement("div");
+                div.textContent = "My Example Sidebar";
+                div.style.display = "block";
+                content.appendChild(div);
+
+                RED.actions.add("core:show-example-sidebar-tab", function () {
+                    RED.sidebar.show("example-sidebar");
+                });
+
+                var input = document.createElement("input");
+                input.type = "text";
+                input.placeholder = "Enter URL";
+                input.style.marginBottom = "10px";
+                if (RED.settings.get("example-sidebar-url")) {
+                    input.value = RED.settings.get("example-sidebar-url");
+                }
+                content.appendChild(input);
+
+                var saveBtn = document.createElement("button");
+                saveBtn.textContent = "Save";
+                saveBtn.style.marginLeft = "5px";
+                content.appendChild(saveBtn);
+
+                saveBtn.addEventListener("click", function() {
+                    var url = input.value;
+                    RED.settings.set("example-sidebar-url", url);
+                    alert("URL saved: " + url);
+                });
+
+                if (RED.settings.get("example-sidebar-url")) {
+                    input.value = RED.settings.get("example-sidebar-url");
+
+                    var swaggerContainer = document.createElement("div");
+                    swaggerContainer.id = "swagger-ui";
+                    content.appendChild(swaggerContainer);
+
+                    var swaggerCssLink = document.createElement("link");
+                    swaggerCssLink.rel = "stylesheet";
+                    swaggerCssLink.type = "text/css";
+                    swaggerCssLink.href = "https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui.css";
+
+                    var swaggerJsLink = document.createElement("script");
+                    swaggerJsLink.src = "https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui-bundle.js";
+                    swaggerJsLink.crossOrigin = "anonymous";
+
+                    var swaggerSpecUrl = RED.settings.get("example-sidebar-url"); // substituir pela URL da especificação OpenAPI/Swagger
+                    //url: "data:text/json;charset=utf-8," + encodeURIComponent(swaggerString),
+
+                    const teste = {"openapi":"3.0.3","info":{"title":"NodeRed-Devops - OpenAPI 3.0","description":"Documentação dos nós HTTP do node-red Devops.\n\nAlguns links que podem serem úteis:\n- [Documentação dos fluxos do setor de Automação](https://ozmap.atlassian.net/wiki/spaces/AUT/pages)","termsOfService":"http://swagger.io/terms/","contact":{"email":"automacao@ozmap.com.br"},"license":{"name":"Apache 2.0","url":"http://www.apache.org/licenses/LICENSE-2.0.html"},"version":"1.0.11"},"externalDocs":{"description":"","url":""},"servers":[{"url":"https://nr-devops.ozmap.com.br"}],"tags":[{"name":"Instance","description":"Endpoints para gerência de instancias nos serviços AWS"}],"paths":{"/api/v1/AWS/services/fullAccess":{"post":{"tags":["Instance"],"summary":"Cria um acesso a AWS para o usuário","description":"Criação dos dados de acesso à Amazon (IAM, S3)","requestBody":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","description":""},"userId":{"type":"string","description":""},"userName":{"type":"string","description":""},"bucketName":{"type":"string","description":""}}}}},"required":true},"responses":{"201":{"description":"Requisição processada","content":{"application/json":{"schema":{"type":"object","properties":{"name":{"type":"string","description":""},"userId":{"type":"string","description":""},"userName":{"type":"string","description":""},"bucketName":{"type":"string","description":""}}}}}},"400":{"$ref":"#/components/responses/BadRequest"},"401":{"$ref":"#/components/responses/Unauthorized"},"503":{"$ref":"#/components/responses/Unavailable"}},"security":[{"Authorization":[]}]}},"/api/v1/AWS/ec2/instances/instance":{"post":{"tags":["Instance"],"summary":"Cria uma instancia na EC2","description":"Cria uma instância virtual na Amazon EC2, utilizando a conta LLC para clientes do exterior ou a conta Brasil para clientes nacionais.","requestBody":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"userId":{"type":"string","description":""},"branch":{"type":"string","description":""},"name":{"type":"string","description":""}}}}},"required":true},"responses":{"201":{"description":"Requisição processada","content":{"application/json":{"schema":{"type":"object","properties":{"provider\"":{"type":"string","description":""},"service\"":{"type":"string","description":""},"instanceType\"":{"type":"string","description":""},"instanceId\"":{"type":"string","description":""},"region\"":{"type":"string","description":""}}}}}},"400":{"$ref":"#/components/responses/BadRequest"},"401":{"$ref":"#/components/responses/Unauthorized"},"503":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"message":{"type":"string","description":""},"error":{"type":"string","description":""}}}}}}},"security":[{"Authorization":[]}]},"delete":{"tags":["Instance"],"summary":"Deleta a instância na AWS","description":"","responses":{"202":{"description":"Requisição processada","content":{"application/json":{"schema":{"type":"object","properties":{"CurrentState":{"type":"object","description":"","properties":{"Code":{"type":"number","description":""},"Name":{"type":"string","description":""}}},"InstanceId":{"type":"string","description":""},"PreviousState":{"type":"object","description":"","properties":{"Code":{"type":"number","description":""},"Name":{"type":"string","description":""}}}}}}}},"400":{"$ref":"#/components/responses/BadRequest"},"401":{"$ref":"#/components/responses/Unauthorized"},"503":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"message":{"type":"string","description":""},"error":{"type":"string","description":""}}}}}}},"security":[{"Authorization":[]}]}},"/api/v1/AWS/ec2/instances/securityGroup":{"post":{"tags":["Instance"],"summary":"Configura o grupo de segurança","description":"Configura a política de segurança da instância","requestBody":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"userId":{"type":"string","description":""},"region":{"type":"string","description":""},"securityGroupsIds":{"type":"string","description":""},"branch":{"type":"string","description":""}}}}},"required":true},"responses":{"202":{"description":"Requisição processada","content":{"application/json":{"schema":{"type":"object","properties":{"httpStatusCode":{"type":"number","description":""},"requestId":{"type":"string","description":""},"attempts":{"type":"number","description":""},"totalRetryDelay":{"type":"number","description":""}}}}}},"400":{"$ref":"#/components/responses/BadRequest"},"401":{"$ref":"#/components/responses/Unauthorized"},"503":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"message":{"type":"string","description":""},"error":{"type":"string","description":""}}}}}}},"security":[{"Authorization":[]}]}},"/api/v1/AWS/ec2/instances/elasticIp":{"post":{"tags":["Instance"],"summary":"Configura um IP elástico para a instância","description":"Ao configurar um endereço de ip elástico para a instância, evitamos que outro endereço IP seja atribuído a instância","requestBody":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"userId":{"type":"string","description":""},"name":{"type":"string","description":""},"region":{"type":"string","description":""},"instanceId":{"type":"string","description":""},"branch":{"type":"string","description":""}}}}},"required":true},"responses":{"202":{"description":"Requisição processada","content":{"application/json":{"schema":{"type":"object","properties":{"allocationId":{"type":"string","description":""},"publicIp":{"type":"string","description":""}}}}}},"400":{"$ref":"#/components/responses/BadRequest"},"401":{"$ref":"#/components/responses/Unauthorized"},"503":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"message":{"type":"string","description":""},"error":{"type":"string","description":""}}}}}}},"security":[{"Authorization":[]}]},"delete":{"tags":["Instance"],"summary":"Libera o IP elástico associado a instância","description":"","responses":{"202":{"description":"Requisição processada","content":{"application/json":{"schema":{"type":"object","properties":{"message":{"type":"string","description":""}}}}}},"400":{"$ref":"#/components/responses/BadRequest"},"401":{"$ref":"#/components/responses/Unauthorized"},"503":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"message":{"type":"string","description":""},"error":{"type":"string","description":""},"address":{"type":"string","description":""}}}}}}},"security":[{"Authorization":[]}]}},"/api/v1/digitalocean/domain":{"post":{"tags":["Instance"],"summary":"Configura um DNS para a instância","description":"Configura um DNS na Digital Ocean que realizará o redirecionamento para um determinado IP","requestBody":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"domain":{"type":"string","description":""},"userId":{"type":"string","description":""},"publicIp":{"type":"string","description":""}}}}},"required":true},"responses":{"201":{"description":"Requisição processada","content":{"application/json":{"schema":{"type":"object","properties":{"domain_record":{"type":"object","properties":{"id":{"type":"number","description":""}}}}}}}},"401":{"$ref":"#/components/responses/Unauthorized"},"406":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"message":{"type":"string","description":""},"error":{"type":"string","description":""}}}}}},"503":{"$ref":"#/components/responses/Unavailable"}},"security":[{"Authorization":[]}]},"delete":{"tags":["Instance"],"summary":"Deleta o DNS na DigitalOcean","description":"","responses":{"202":{"description":"Requisição processada","content":{"application/json":{"schema":{"type":"object","properties":{"message":{"type":"string","description":""}}}}}},"401":{"$ref":"#/components/responses/Unauthorized"},"503":{"description":"","content":{"application/json":{"schema":{"type":"object","properties":{"message":{"type":"string","description":""},"error":{"type":"string","description":""}}}}}}},"security":[{"Authorization":[]}]}}},"components":{"responses":{"BadRequest":{"description":"Faltando parâmetros","content":{"application/json":{"schema":{"type":"object","properties":{"message":{"type":"string"}}}}}},"Unauthorized":{"description":"Requisição não autorizada","content":{"application/json":{"schema":{"type":"object","properties":{"message":{"type":"string","description":""}}}}}},"Unavailable":{"description":"Serviço indisponível","content":{"application/json":{"schema":{"type":"object","properties":{"message":{"type":"string","description":""},"error":{"type":"string","description":""}}}}}}},"securitySchemes":{"Authorization":{"type":"apiKey","in":"header","name":"authorization"}}}};
+                    //console.log(teste);
+                    swaggerJsLink.addEventListener("load", function() {
+                        window.ui = SwaggerUIBundle({
+                            //url: swaggerSpecUrl,
+                            //url: "data:text/json;charset=utf-8," + encodeURIComponent(teste),
+                            spec: teste,
+                            dom_id: '#swagger-ui',
+                            presets: [SwaggerUIBundle.presets.apis],
+                            layout: "BaseLayout",
+                            deepLinking: true,
+                            showExtensions: true,
+                            showCommonExtensions: true
+                        });
+                    });
+
+                    document.head.appendChild(swaggerCssLink);
+                    document.head.appendChild(swaggerJsLink);
+                }
+
+                RED.sidebar.addTab({
+                    id: "example-sidebar",
+                    name: "Example Sidebar",
+                    label: "Example",
+                    iconClass: "fa fa-birthday-cake",
+                    content: content,
+                    action: "core:show-example-sidebar-tab"
+                });
+            }
+        });
+    })();
+</script>
